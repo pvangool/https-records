@@ -1,0 +1,264 @@
+{
+  "generated": "2026-09-28T21:49:54Z",
+  "contact": "https://github.com/pvangool/svcbscan/issues",
+  "rules": {
+    "SVCB001": {
+      "summary": "no HTTPS record published",
+      "probe": false
+    },
+    "SVCB002": {
+      "summary": "AliasMode and ServiceMode mixed in one RRSet",
+      "probe": false
+    },
+    "SVCB003": {
+      "summary": "more than one AliasMode record",
+      "probe": false
+    },
+    "SVCB004": {
+      "summary": "AliasMode record carries SvcParams",
+      "probe": false
+    },
+    "SVCB005": {
+      "summary": "AliasMode chain is broken",
+      "probe": false
+    },
+    "SVCB006": {
+      "summary": "AliasMode target is \".\" (service unavailable)",
+      "probe": false
+    },
+    "SVCB007": {
+      "summary": "TargetName is an IP address, not a hostname",
+      "probe": false
+    },
+    "SVCB008": {
+      "summary": "AliasMode record targets its own name",
+      "probe": false
+    },
+    "SVCB010": {
+      "summary": "key listed in mandatory is absent",
+      "probe": false
+    },
+    "SVCB011": {
+      "summary": "mandatory lists itself or repeats a key",
+      "probe": false
+    },
+    "SVCB012": {
+      "summary": "SvcParamKeys not strictly increasing",
+      "probe": false
+    },
+    "SVCB013": {
+      "summary": "no-default-alpn without alpn",
+      "probe": false
+    },
+    "SVCB014": {
+      "summary": "unrecognized ALPN identifier",
+      "probe": false
+    },
+    "SVCB015": {
+      "summary": "port=443 is redundant on HTTPS records",
+      "probe": false
+    },
+    "SVCB020": {
+      "summary": "ipv4hint does not match A records (usually CDN rotation)",
+      "probe": false
+    },
+    "SVCB021": {
+      "summary": "ipv6hint does not match AAAA records (usually CDN rotation)",
+      "probe": false
+    },
+    "SVCB030": {
+      "summary": "ech value is not a valid ECHConfigList",
+      "probe": false
+    },
+    "SVCB031": {
+      "summary": "ECHConfig version is not current",
+      "probe": false
+    },
+    "SVCB032": {
+      "summary": "ech published in an unsigned zone",
+      "probe": false
+    },
+    "SVCB033": {
+      "summary": "zone is signed but its parent has no DS record",
+      "probe": false
+    },
+    "SVCB050": {
+      "summary": "resolvers disagree on the HTTPS RRSet",
+      "probe": false
+    },
+    "SVCB051": {
+      "summary": "resolvers return different ech configs",
+      "probe": false
+    },
+    "SVCB052": {
+      "summary": "resolvers differ only in address hints",
+      "probe": false
+    },
+    "SVCB040": {
+      "summary": "TLS handshake to the service endpoint fails",
+      "probe": true
+    },
+    "SVCB041": {
+      "summary": "advertised TCP ALPN is not negotiated",
+      "probe": true
+    },
+    "SVCB042": {
+      "summary": "h3 advertised but QUIC handshake fails",
+      "probe": true
+    },
+    "SVCB043": {
+      "summary": "server rejected ECH and sent retry configs (DNS ech is stale)",
+      "probe": true
+    },
+    "SVCB044": {
+      "summary": "server rejected ECH without retry configs",
+      "probe": true
+    },
+    "SVCB045": {
+      "summary": "ECH handshake failed for another reason",
+      "probe": true
+    },
+    "SVCB046": {
+      "summary": "hinted address does not serve the origin",
+      "probe": true
+    },
+    "SVCB047": {
+      "summary": "implied http/1.1 (no no-default-alpn) is not negotiated",
+      "probe": true
+    }
+  },
+  "runs": [
+    {
+      "meta": {
+        "date": "2026-09-28",
+        "tranco": {
+          "list_id": "64X3X",
+          "top": 100000,
+          "url": "https://tranco-list.eu/list/64X3X"
+        },
+        "names": 100000,
+        "resolver": "tls://1.1.1.1",
+        "vantage": "Scaleway, France",
+        "svcbscan_version": "v0.5.2",
+        "started": "2026-09-28T21:28:11Z",
+        "finished": "2026-09-28T21:49:49Z",
+        "durations": {
+          "baseline_seconds": 522,
+          "probe_seconds": 760
+        }
+      },
+      "summary": {
+        "schema_version": 2,
+        "tool_version": "v0.5.2",
+        "source": "summarize",
+        "names": 100000,
+        "lookup_errors": 84,
+        "no_record": 75428,
+        "with_https": 24488,
+        "alias_mode": 22,
+        "ech": 10725,
+        "probe_merged": 24488,
+        "alpn": {
+          "h2": 24344,
+          "h3": 16358,
+          "h3-27": 1,
+          "h3-29": 3,
+          "http/1.1": 116
+        },
+        "ech_public_names": {
+          "bmFkZWtvLm5ldAo.net": 1,
+          "cloudflare-ech.com": 10711,
+          "ech.addr.tools": 1,
+          "ech.encryptedclienthello.com": 3,
+          "ech.siam-cdn.net": 1,
+          "ech.sly.ee": 1,
+          "google.com": 2,
+          "ietf.org": 2,
+          "nghttp2.org": 1,
+          "numshield-ech.ru": 1,
+          "world79.spcs.bio": 1
+        },
+        "dnssec": {
+          "partial": 23,
+          "signed": 3009,
+          "unsigned": 88410,
+          "validated": 8474
+        },
+        "probe_ech": {
+          "accepted": 10721,
+          "rejected": 3
+        },
+        "rules": {
+          "SVCB004": {
+            "names": 2,
+            "severity": "warn"
+          },
+          "SVCB005": {
+            "names": 1,
+            "severity": "error"
+          },
+          "SVCB006": {
+            "names": 2,
+            "severity": "info"
+          },
+          "SVCB007": {
+            "names": 1,
+            "severity": "error"
+          },
+          "SVCB008": {
+            "names": 2,
+            "severity": "error"
+          },
+          "SVCB014": {
+            "names": 3,
+            "severity": "info"
+          },
+          "SVCB015": {
+            "names": 4,
+            "severity": "info"
+          },
+          "SVCB020": {
+            "names": 100,
+            "severity": "info"
+          },
+          "SVCB021": {
+            "names": 216,
+            "severity": "info"
+          },
+          "SVCB032": {
+            "names": 9779,
+            "severity": "info"
+          },
+          "SVCB033": {
+            "names": 2835,
+            "severity": "warn"
+          },
+          "SVCB040": {
+            "names": 24,
+            "severity": "error"
+          },
+          "SVCB041": {
+            "names": 10,
+            "severity": "error"
+          },
+          "SVCB042": {
+            "names": 120,
+            "severity": "warn"
+          },
+          "SVCB044": {
+            "names": 3,
+            "severity": "error"
+          },
+          "SVCB046": {
+            "names": 1,
+            "severity": "warn"
+          },
+          "SVCB047": {
+            "names": 9,
+            "severity": "warn"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "date": "2026-09-28",
+  "tranco": {
+    "list_id": "64X3X",
+    "top": 100000,
+    "url": "https://tranco-list.eu/list/64X3X"
+  },
+  "names": 100000,
+  "resolver": "tls://1.1.1.1",
+  "vantage": "Scaleway, France",
+  "svcbscan_version": "v0.5.2",
+  "started": "2026-09-28T21:28:11Z",
+  "finished": "2026-09-28T21:49:49Z",
+  "durations": {
+    "baseline_seconds": 522,
+    "probe_seconds": 760
+  }
+}

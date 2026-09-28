@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HTTPS records on the top 100,000 sites · svcbscan</title>
+<meta name="description" content="Weekly measurement of HTTPS DNS records, HTTP/3, Encrypted Client Hello and DNSSEC across the Tranco top 100,000 sites.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Public+Sans:ital,wght@0,400;0,600;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #F4F6F3;
+  --panel: #FFFFFF;
+  --ink: #18222E;
+  --ink-soft: #4A5663;
+  --steel: #2D5B88;
+  --steel-wash: #E3ECF4;
+  --good: #2F7550;
+  --bad: #A8412E;
+  --rule: #CDD3CE;
+  --sans: "Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --measure: 42rem;
+  --wide: 64rem;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #12181F; --panel: #19212B; --ink: #E4E9EE; --ink-soft: #A3AFBB;
+    --steel: #8DB6DE; --steel-wash: #1F3246; --good: #72C39A; --bad: #E58B77; --rule: #2E3945;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #12181F; --panel: #19212B; --ink: #E4E9EE; --ink-soft: #A3AFBB;
+  --steel: #8DB6DE; --steel-wash: #1F3246; --good: #72C39A; --bad: #E58B77; --rule: #2E3945;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font: 400 1.0625rem/1.6 var(--sans);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--steel); text-underline-offset: 0.18em; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--steel); outline-offset: 3px; border-radius: 2px; }
+.wrap { max-width: var(--wide); margin: 0 auto; padding: 0 1.25rem; }
+.prose { max-width: var(--measure); }
+
+/* Masthead */
+.mast { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 1rem;
+  padding: 1.1rem 0; border-bottom: 1px solid var(--rule); font-size: 0.9375rem; }
+.mast strong { font-weight: 800; letter-spacing: -0.01em; }
+.mast nav { display: flex; gap: 0.4rem 1.25rem; flex-wrap: wrap; }
+
+/* Heading */
+h1 { font-weight: 800; font-size: clamp(1.9rem, 4.2vw, 3rem); line-height: 1.08;
+  letter-spacing: -0.025em; margin: 2.75rem 0 0.75rem; max-width: 20ch; }
+.stamp { color: var(--ink-soft); margin: 0 0 2.25rem; max-width: var(--measure); }
+
+/* The annotated record: the page's one bold element */
+.record { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px;
+  padding: 1.5rem 1.5rem 0.5rem; margin: 0 0 3.5rem; }
+.rr { font: 400 clamp(0.85rem, 1.5vw, 1.08rem)/1.9 var(--mono); margin: 0 0 1.5rem;
+  display: flex; flex-wrap: wrap; column-gap: 1.1ch; color: var(--ink-soft); }
+.rr span { white-space: nowrap; }
+.rr a { color: var(--steel); text-decoration: none; border-bottom: 2px solid var(--steel-wash);
+  padding: 0.05em 0.1em; border-radius: 2px; transition: background-color 120ms; }
+.rr a.lit, .rr a:hover { background: var(--steel-wash); border-bottom-color: var(--steel); }
+.notes { list-style: none; margin: 0; padding: 0; }
+.notes li { display: grid; grid-template-columns: minmax(8.5rem, 12rem) 1fr; gap: 0 1.5rem;
+  padding: 0.9rem 0; border-top: 1px solid var(--rule); transition: background-color 120ms; }
+.notes li.lit { background: linear-gradient(90deg, var(--steel-wash), transparent 70%); }
+.notes code { font: 600 0.875rem/1.6 var(--mono); color: var(--steel); overflow-wrap: anywhere; }
+.notes p { margin: 0; max-width: var(--measure); }
+@media (max-width: 40rem) {
+  .notes li { grid-template-columns: 1fr; gap: 0.2rem; }
+  .record { padding: 1rem 1rem 0.25rem; }
+}
+.bad { color: var(--bad); font-weight: 600; }
+.good { color: var(--good); font-weight: 600; }
+
+/* Sections */
+section { margin: 0 0 3.5rem; }
+h2 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.015em; margin: 0 0 0.75rem; }
+h3 { font-size: 1rem; font-weight: 600; margin: 0 0 0.25rem; }
+p { margin: 0 0 1rem; }
+.muted { color: var(--ink-soft); }
+
+/* Trends: small multiples */
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1.75rem 2rem; }
+.chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+.chart .now { font-weight: 800; font-size: 1.6rem; letter-spacing: -0.02em; line-height: 1.2; }
+.chart .axis { font: 400 11px var(--sans); fill: var(--ink-soft); }
+.chart .grid { stroke: var(--rule); stroke-width: 1; }
+.chart .line { fill: none; stroke: var(--steel); stroke-width: 2; stroke-linejoin: round; }
+.chart .dot { fill: var(--steel); }
+
+/* Findings table */
+.table-wrap { overflow-x: auto; border-top: 2px solid var(--ink); }
+table { border-collapse: collapse; width: 100%; min-width: 40rem; font-size: 0.9375rem; }
+th, td { text-align: left; padding: 0.55rem 0.75rem 0.55rem 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 600; color: var(--ink-soft); }
+td.num, th.num { text-align: right; white-space: nowrap; }
+td.id { font: 400 0.8125rem/1.7 var(--mono); white-space: nowrap; }
+tr.group td { padding-top: 1.4rem; font-weight: 800; border-bottom: 1px solid var(--ink); }
+tr.group .muted { font-weight: 400; }
+.sev { white-space: nowrap; }
+.sev-error { color: var(--bad); font-weight: 600; }
+.sev-warn { color: var(--bad); }
+.sev-info { color: var(--ink-soft); }
+
+footer { border-top: 1px solid var(--rule); padding: 1.5rem 0 2.5rem; font-size: 0.9375rem; color: var(--ink-soft); }
+dl.meta { display: grid; grid-template-columns: max-content 1fr; gap: 0.35rem 1.25rem; margin: 0 0 1.25rem; }
+dl.meta dt { color: var(--ink-soft); }
+dl.meta dd { margin: 0; overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <strong>svcbscan</strong>
+    <nav aria-label="Page">
+      <a href="#trends">Trends</a>
+      <a href="#findings">All findings</a>
+      <a href="#method">Method and data</a>
+      <a href="https://github.com/pvangool/svcbscan">Source</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1 id="title">What the top websites publish in their HTTPS DNS records</h1>
+    <p class="stamp" id="stamp"></p>
+
+    <div class="record" aria-labelledby="record-caption">
+      <p class="muted" id="record-caption" style="margin:0 0 0.75rem;font-size:0.9375rem">
+        A typical HTTPS record, field by field, with what this week's scan found about each part.</p>
+      <pre class="rr" id="rr"></pre>
+      <ul class="notes" id="notes"></ul>
+    </div>
+
+    <section id="dnssec" class="prose">
+      <h2>DNSSEC that protects nothing</h2>
+      <div id="dnssec-body"></div>
+    </section>
+
+    <section id="trends">
+      <h2>Trends</h2>
+      <p class="prose muted" id="trends-note"></p>
+      <div class="charts" id="charts"></div>
+    </section>
+
+    <section id="findings">
+      <h2>All findings this week</h2>
+      <p class="prose muted">Counts are sites with at least one finding of that kind. Record findings are a share of sites that publish an HTTPS record; DNSSEC findings are a share of all sites that resolved.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Rule</th><th>What it means</th><th>Severity</th><th class="num">Sites</th><th class="num">Share</th></tr></thead>
+        <tbody id="rules"></tbody>
+      </table></div>
+    </section>
+
+    <section id="method" class="prose">
+      <h2>Method and data</h2>
+      <div id="method-body"></div>
+    </section>
+  </main>
+
+  <footer id="footer"></footer>
+</div>
+
+<script type="application/json" id="svcbscan-data">
+{
+  "generated": "2026-09-28T21:49:54Z",
+  "contact": "https://github.com/pvangool/svcbscan/issues",
+  "rules": {
+    "SVCB001": {
+      "summary": "no HTTPS record published",
+      "probe": false
+    },
+    "SVCB002": {
+      "summary": "AliasMode and ServiceMode mixed in one RRSet",
+      "probe": false
+    },
+    "SVCB003": {
+      "summary": "more than one AliasMode record",
+      "probe": false
+    },
+    "SVCB004": {
+      "summary": "AliasMode record carries SvcParams",
+      "probe": false
+    },
+    "SVCB005": {
+      "summary": "AliasMode chain is broken",
+      "probe": false
+    },
+    "SVCB006": {
+      "summary": "AliasMode target is \".\" (service unavailable)",
+      "probe": false
+    },
+    "SVCB007": {
+      "summary": "TargetName is an IP address, not a hostname",
+      "probe": false
+    },
+    "SVCB008": {
+      "summary": "AliasMode record targets its own name",
+      "probe": false
+    },
+    "SVCB010": {
+      "summary": "key listed in mandatory is absent",
+      "probe": false
+    },
+    "SVCB011": {
+      "summary": "mandatory lists itself or repeats a key",
+      "probe": false
+    },
+    "SVCB012": {
+      "summary": "SvcParamKeys not strictly increasing",
+      "probe": false
+    },
+    "SVCB013": {
+      "summary": "no-default-alpn without alpn",
+      "probe": false
+    },
+    "SVCB014": {
+      "summary": "unrecognized ALPN identifier",
+      "probe": false
+    },
+    "SVCB015": {
+      "summary": "port=443 is redundant on HTTPS records",
+      "probe": false
+    },
+    "SVCB020": {
+      "summary": "ipv4hint does not match A records (usually CDN rotation)",
+      "probe": false
+    },
+    "SVCB021": {
+      "summary": "ipv6hint does not match AAAA records (usually CDN rotation)",
+      "probe": false
+    },
+    "SVCB030": {
+      "summary": "ech value is not a valid ECHConfigList",
+      "probe": false
+    },
+    "SVCB031": {
+      "summary": "ECHConfig version is not current",
+      "probe": false
+    },
+    "SVCB032": {
+      "summary": "ech published in an unsigned zone",
+      "probe": false
+    },
+    "SVCB033": {
+      "summary": "zone is signed but its parent has no DS record",
+      "probe": false
+    },
+    "SVCB050": {
+      "summary": "resolvers disagree on the HTTPS RRSet",
+      "probe": false
+    },
+    "SVCB051": {
+      "summary": "resolvers return different ech configs",
+      "probe": false
+    },
+    "SVCB052": {
+      "summary": "resolvers differ only in address hints",
+      "probe": false
+    },
+    "SVCB040": {
+      "summary": "TLS handshake to the service endpoint fails",
+      "probe": true
+    },
+    "SVCB041": {
+      "summary": "advertised TCP ALPN is not negotiated",
+      "probe": true
+    },
+    "SVCB042": {
+      "summary": "h3 advertised but QUIC handshake fails",
+      "probe": true
+    },
+    "SVCB043": {
+      "summary": "server rejected ECH and sent retry configs (DNS ech is stale)",
+      "probe": true
+    },
+    "SVCB044": {
+      "summary": "server rejected ECH without retry configs",
+      "probe": true
+    },
+    "SVCB045": {
+      "summary": "ECH handshake failed for another reason",
+      "probe": true
+    },
+    "SVCB046": {
+      "summary": "hinted address does not serve the origin",
+      "probe": true
+    },
+    "SVCB047": {
+      "summary": "implied http/1.1 (no no-default-alpn) is not negotiated",
+      "probe": true
+    }
+  },
+  "runs": [
+    {
+      "meta": {
+        "date": "2026-09-28",
+        "tranco": {
+          "list_id": "64X3X",
+          "top": 100000,
+          "url": "https://tranco-list.eu/list/64X3X"
+        },
+        "names": 100000,
+        "resolver": "tls://1.1.1.1",
+        "vantage": "Scaleway, France",
+        "svcbscan_version": "v0.5.2",
+        "started": "2026-09-28T21:28:11Z",
+        "finished": "2026-09-28T21:49:49Z",
+        "durations": {
+          "baseline_seconds": 522,
+          "probe_seconds": 760
+        }
+      },
+      "summary": {
+        "schema_version": 2,
+        "tool_version": "v0.5.2",
+        "source": "summarize",
+        "names": 100000,
+        "lookup_errors": 84,
+        "no_record": 75428,
+        "with_https": 24488,
+        "alias_mode": 22,
+        "ech": 10725,
+        "probe_merged": 24488,
+        "alpn": {
+          "h2": 24344,
+          "h3": 16358,
+          "h3-27": 1,
+          "h3-29": 3,
+          "http/1.1": 116
+        },
+        "ech_public_names": {
+          "bmFkZWtvLm5ldAo.net": 1,
+          "cloudflare-ech.com": 10711,
+          "ech.addr.tools": 1,
+          "ech.encryptedclienthello.com": 3,
+          "ech.siam-cdn.net": 1,
+          "ech.sly.ee": 1,
+          "google.com": 2,
+          "ietf.org": 2,
+          "nghttp2.org": 1,
+          "numshield-ech.ru": 1,
+          "world79.spcs.bio": 1
+        },
+        "dnssec": {
+          "partial": 23,
+          "signed": 3009,
+          "unsigned": 88410,
+          "validated": 8474
+        },
+        "probe_ech": {
+          "accepted": 10721,
+          "rejected": 3
+        },
+        "rules": {
+          "SVCB004": {
+            "names": 2,
+            "severity": "warn"
+          },
+          "SVCB005": {
+            "names": 1,
+            "severity": "error"
+          },
+          "SVCB006": {
+            "names": 2,
+            "severity": "info"
+          },
+          "SVCB007": {
+            "names": 1,
+            "severity": "error"
+          },
+          "SVCB008": {
+            "names": 2,
+            "severity": "error"
+          },
+          "SVCB014": {
+            "names": 3,
+            "severity": "info"
+          },
+          "SVCB015": {
+            "names": 4,
+            "severity": "info"
+          },
+          "SVCB020": {
+            "names": 100,
+            "severity": "info"
+          },
+          "SVCB021": {
+            "names": 216,
+            "severity": "info"
+          },
+          "SVCB032": {
+            "names": 9779,
+            "severity": "info"
+          },
+          "SVCB033": {
+            "names": 2835,
+            "severity": "warn"
+          },
+          "SVCB040": {
+            "names": 24,
+            "severity": "error"
+          },
+          "SVCB041": {
+            "names": 10,
+            "severity": "error"
+          },
+          "SVCB042": {
+            "names": 120,
+            "severity": "warn"
+          },
+          "SVCB044": {
+            "names": 3,
+            "severity": "error"
+          },
+          "SVCB046": {
+            "names": 1,
+            "severity": "warn"
+          },
+          "SVCB047": {
+            "names": 9,
+            "severity": "warn"
+          }
+        }
+      }
+    }
+  ]
+}
+</script>
+<script>
+(() => {
+  "use strict";
+  const D = JSON.parse(document.getElementById("svcbscan-data").textContent);
+  const runs = D.runs;
+  const latest = runs[runs.length - 1];
+  const S = latest.summary, M = latest.meta;
+
+  // ---- helpers ----------------------------------------------------------
+  const el = (tag, attrs = {}, html = "") => {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    e.innerHTML = html;
+    return e;
+  };
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const n = x => Number(x || 0).toLocaleString("en-US");
+  // Never round a partial share to 0% or 100%: 10,720 of 10,723 is 99.97%.
+  const pct = (x, of) => {
+    if (!of) return "–";
+    const p = 100 * x / of;
+    if (p > 0 && p < 0.01) return "<0.01%";
+    if (p > 0 && p < 0.1) return p.toFixed(2) + "%";
+    if (x < of && p.toFixed(1) === "100.0") return (p > 99.99 ? ">99.99" : p.toFixed(2)) + "%";
+    return p.toFixed(1) + "%";
+  };
+  const rule = (s, id) => (s.rules && s.rules[id] ? s.rules[id].names : 0);
+  const longDate = iso => new Date(iso + "T00:00:00Z").toLocaleDateString("en-US",
+    { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
+
+  // Derived numbers for one run; used for the latest run and for trends.
+  const metrics = s => {
+    const resolved = s.names - s.lookup_errors;
+    const dn = s.dnssec || {};
+    const signedZones = (dn.validated || 0) + (dn.signed || 0);
+    const alpn = s.alpn || {};
+    return {
+      resolved,
+      https: s.with_https, httpsShare: s.with_https / resolved,
+      h3: alpn.h3 || 0, h3Share: (alpn.h3 || 0) / resolved,
+      h3Fail: rule(s, "SVCB042"),
+      ech: s.ech, echShare: s.ech / resolved,
+      islands: rule(s, "SVCB033"), signedZones,
+      islandShare: signedZones ? rule(s, "SVCB033") / signedZones : 0,
+    };
+  };
+  const m = metrics(S);
+  const top = M.tranco.top;
+
+  // ---- heading ------------------------------------------------------------
+  document.getElementById("title").textContent =
+    `What the top ${n(top)} websites publish in their HTTPS DNS records`;
+  const list = M.tranco.url ? `<a href="${esc(M.tranco.url)}">Tranco list ${esc(M.tranco.list_id)}</a>` : "a local list";
+  document.getElementById("stamp").innerHTML =
+    `Scanned ${longDate(M.date)} from ${esc(M.vantage)}, using ${list}. Updated weekly.`;
+
+  // ---- the annotated record ---------------------------------------------
+  const providers = Object.entries(S.ech_public_names || {}).sort((a, b) => b[1] - a[1]);
+  const [topProvider, topProviderN] = providers[0] || ["", 0];
+  const pe = S.probe_ech || {};
+  const echProbed = Object.values(pe).reduce((a, b) => a + b, 0);
+  const aliasBroken = rule(S, "SVCB005") + rule(S, "SVCB007") + rule(S, "SVCB008");
+  const hintMismatch = rule(S, "SVCB020") + rule(S, "SVCB021");
+
+  const fields = [
+    { id: "type", token: "HTTPS",
+      note: `<strong>${pct(m.https, m.resolved)}</strong> of sites publish an HTTPS record (${n(m.https)} of ${n(m.resolved)}). It tells browsers how to connect before they connect.` },
+    { id: "mode", token: "1 .",
+      note: `Priority 1 with target “.” means “this name, with these parameters”. Only ${n(S.alias_mode)} sites use AliasMode (priority 0) to point elsewhere, and <span class="bad">${n(aliasBroken)} of those are broken</span>: loops, IP addresses as targets, or targets that don't exist.` },
+    { id: "alpn", token: 'alpn="h2,h3"',
+      note: `<strong>${pct(m.h3, m.resolved)}</strong> of sites advertise HTTP/3 (h3). <span class="bad">${n(m.h3Fail)} of them (${pct(m.h3Fail, m.h3)}) never complete a QUIC handshake</span>, even on a second try. Browsers fall back to TCP, so the cost is a delay rather than an outage.` },
+    { id: "ech", token: 'ech="AEX+DQBB…"',
+      note: `<strong>${pct(m.ech, m.resolved)}</strong> of sites publish an Encrypted Client Hello key, which hides the site name from the network.` +
+        (topProvider ? ` ${pct(topProviderN, m.ech)} of those keys use the public name <code>${esc(topProvider)}</code>.` : "") +
+        (echProbed ? ` <span class="good">${pct(pe.accepted || 0, echProbed)} of probed ECH handshakes succeeded</span>${pe.stale ? `; ${n(pe.stale)} servers had rotated their key without updating DNS` : ""}.` : "") },
+    { id: "hint", token: 'ipv4hint="192.0.2.1"',
+      note: `Address hints disagree with the site's A or AAAA records on ${n(hintMismatch)} sites, which is almost always a CDN rotating addresses. Connecting to the hinted address fails on ${n(rule(S, "SVCB046"))}.` },
+  ];
+
+  const rr = document.getElementById("rr");
+  const link = f => `<span><a href="#note-${f.id}" data-note="${f.id}">${esc(f.token)}</a></span>`;
+  // Fields wrap between tokens on narrow screens, never inside one.
+  rr.innerHTML = ["<span>example.com.</span>", "<span>300</span>", "<span>IN</span>",
+    ...fields.map(link)].join("");
+  const notes = document.getElementById("notes");
+  for (const f of fields) {
+    const li = el("li", { id: `note-${f.id}`, "data-note": f.id });
+    li.innerHTML = `<code>${esc(f.token)}</code><p>${f.note}</p>`;
+    notes.append(li);
+  }
+  // Pointing at a field lights up its note, and the reverse.
+  const light = (id, on) => document.querySelectorAll(`[data-note="${id}"]`).forEach(x => x.classList.toggle("lit", on));
+  document.querySelectorAll("[data-note]").forEach(x => {
+    const id = x.dataset.note;
+    ["mouseenter", "focus"].forEach(ev => x.addEventListener(ev, () => light(id, true)));
+    ["mouseleave", "blur"].forEach(ev => x.addEventListener(ev, () => light(id, false)));
+  });
+
+  // ---- DNSSEC -------------------------------------------------------------
+  document.getElementById("dnssec-body").innerHTML =
+    `<p><strong>${n(m.islands)} sites</strong> (${pct(m.islands, m.resolved)}) sign their DNS zone but have no DS record at their parent, so no resolver can ever validate the signatures. ` +
+    `That is <span class="bad">${pct(m.islands, m.signedZones)} of every zone that signs</span>.</p>` +
+    `<p class="muted">The fix is a single setting: publish the DS record at the domain's registrar. Zones where only part of the answer is signed, such as a signed domain pointing at an unsigned CDN, are normal and not counted.</p>`;
+
+  // ---- trends -------------------------------------------------------------
+  const series = [
+    { title: "HTTPS record", get: r => metrics(r.summary).httpsShare },
+    { title: "HTTP/3 advertised", get: r => metrics(r.summary).h3Share },
+    { title: "ECH published", get: r => metrics(r.summary).echShare },
+    { title: "Zones missing DS", get: r => metrics(r.summary).islandShare },
+  ];
+  document.getElementById("trends-note").textContent = runs.length < 2
+    ? `This page has one scan so far. Lines appear once the next weekly scan runs.`
+    : `${runs.length} weekly scans since ${longDate(runs[0].meta.date)}.`;
+
+  // Each chart is scaled to its own range so weekly changes are visible;
+  // the top and bottom of the range are labelled so the scale is explicit.
+  const chart = s => {
+    const W = 320, H = 120, P = { l: 4, r: 44, t: 8, b: 20 };
+    const vals = runs.map(s.get);
+    let lo = Math.min(...vals), hi = Math.max(...vals);
+    const pad = Math.max((hi - lo) * 0.25, hi * 0.02, 0.0005);
+    lo = Math.max(0, lo - pad); hi = hi + pad;
+    const x = i => P.l + (runs.length < 2 ? (W - P.l - P.r) : i * (W - P.l - P.r) / (runs.length - 1));
+    const y = v => P.t + (H - P.t - P.b) * (1 - (v - lo) / (hi - lo));
+    const ylab = v => `<text class="axis" x="${W}" y="${y(v) + 4}" text-anchor="end">${(100 * v).toFixed(1)}%</text>`;
+    const pts = vals.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+    const last = vals[vals.length - 1];
+    const lbl = (i, anchor) => `<text class="axis" x="${x(i)}" y="${H - 2}" text-anchor="${anchor}">${esc(runs[i].meta.date.slice(5))}</text>`;
+    const div = el("div", { class: "chart" });
+    div.innerHTML =
+      `<h3>${esc(s.title)}</h3><div class="now">${(100 * last).toFixed(1)}%</div>` +
+      `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(s.title)}: ${vals.map((v, i) => `${runs[i].meta.date} ${(100 * v).toFixed(1)}%`).join(", ")}">` +
+      `<line class="grid" x1="0" x2="${W - P.r + 6}" y1="${y(hi)}" y2="${y(hi)}"/>` +
+      `<line class="grid" x1="0" x2="${W - P.r + 6}" y1="${y(lo)}" y2="${y(lo)}"/>` +
+      ylab(hi) + ylab(lo) +
+      (runs.length > 1 ? `<polyline class="line" points="${pts}"/>` : "") +
+      vals.map((v, i) => `<circle class="dot" cx="${x(i)}" cy="${y(v)}" r="${i === vals.length - 1 ? 3.5 : 2}"/>`).join("") +
+      lbl(0, "start") + (runs.length > 1 ? lbl(runs.length - 1, "end") : "") +
+      `</svg>`;
+    return div;
+  };
+  const charts = document.getElementById("charts");
+  series.forEach(s => charts.append(chart(s)));
+
+  // ---- all findings ---------------------------------------------------------
+  const groups = [
+    { title: "Broken or misleading records", of: m.https, ofLabel: "sites with an HTTPS record",
+      match: (id, sev) => !["SVCB040", "SVCB033"].includes(id) && sev !== "info" },
+    { title: "DNSSEC", of: m.resolved, ofLabel: "resolved sites", match: id => id === "SVCB033" },
+    { title: "Unreachable", of: m.https, ofLabel: "usually a site problem, not a record problem", match: id => id === "SVCB040" },
+    { title: "Notes", of: m.https, ofLabel: "worth knowing, not broken", match: (id, sev) => sev === "info" && id !== "SVCB001" },
+  ];
+  const sevRank = { error: 0, warn: 1, info: 2 };
+  const entries = Object.entries(S.rules || {}).filter(([id]) => id !== "SVCB001");
+  const tbody = document.getElementById("rules");
+  for (const g of groups) {
+    const rows = entries.filter(([id, r]) => g.match(id, r.severity))
+      .sort((a, b) => (sevRank[a[1].severity] - sevRank[b[1].severity]) || (b[1].names - a[1].names));
+    if (!rows.length) continue;
+    tbody.append(el("tr", { class: "group" }, `<td colspan="5">${esc(g.title)} <span class="muted">(${esc(g.ofLabel)})</span></td>`));
+    for (const [id, r] of rows) {
+      const desc = (D.rules[id] && D.rules[id].summary) || "";
+      tbody.append(el("tr", {},
+        `<td class="id">${esc(id)}</td><td>${esc(desc)}</td>` +
+        `<td class="sev sev-${esc(r.severity)}">${esc(r.severity)}</td>` +
+        `<td class="num">${n(r.names)}</td><td class="num">${pct(r.names, g.of)}</td>`));
+    }
+  }
+
+  // ---- method -------------------------------------------------------------
+  const mins = s => `${Math.round(s / 60)} min`;
+  document.getElementById("method-body").innerHTML =
+    `<p>Every week the top ${n(top)} sites from the Tranco list are scanned with <a href="https://github.com/pvangool/svcbscan">svcbscan</a>. ` +
+    `Each site's HTTPS record is checked against RFC 9460 and against its A and AAAA records. For the ${n(m.https)} sites that publish one, ` +
+    `svcbscan then connects and verifies what the record promises: each advertised protocol, HTTP/3 over QUIC, and a real Encrypted Client Hello handshake with the published key.</p>` +
+    `<dl class="meta">` +
+    `<dt>Scan date</dt><dd>${longDate(M.date)}</dd>` +
+    `<dt>Site list</dt><dd>${list}, top ${n(top)}</dd>` +
+    `<dt>Vantage point</dt><dd>${esc(M.vantage)}</dd>` +
+    `<dt>Resolver</dt><dd><code>${esc(M.resolver)}</code></dd>` +
+    `<dt>Tool version</dt><dd>svcbscan ${esc(M.svcbscan_version)}</dd>` +
+    `<dt>Duration</dt><dd>DNS scan ${mins(M.durations.baseline_seconds)}, connection probes ${mins(M.durations.probe_seconds)}</dd>` +
+    `<dt>Lookup failures</dt><dd>${n(S.lookup_errors)} of ${n(S.names)} sites (excluded from shares)</dd>` +
+    `</dl>` +
+    `<p>Download this week's <a href="data/${esc(M.date)}/summary.json">summary</a> and <a href="data/${esc(M.date)}/meta.json">run details</a>, or <a href="data.json">every scan so far</a>. ` +
+    `Results from a single vantage point can be affected by the network in between, especially QUIC timeouts.</p>` +
+    `<p>Site operators who want their domain left out of future scans can <a href="${esc(D.contact)}">ask here</a>.</p>`;
+
+  document.getElementById("footer").innerHTML =
+    `Built ${esc(D.generated.slice(0, 10))} from ${runs.length} scan${runs.length === 1 ? "" : "s"}. ` +
+    `Data and code are open; see <a href="https://github.com/pvangool/svcbscan">github.com/pvangool/svcbscan</a>.`;
+})();
+</script>
+</body>
+</html>
