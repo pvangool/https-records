@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-28T21:49:54Z",
+  "generated": "2026-10-06T13:49:33Z",
   "contact": "https://github.com/pvangool/svcbscan/issues",
   "rules": {
     "SVCB001": {
@@ -255,6 +255,136 @@
           },
           "SVCB047": {
             "names": 9,
+            "severity": "warn"
+          }
+        }
+      }
+    },
+    {
+      "meta": {
+        "date": "2026-10-06",
+        "tranco": {
+          "list_id": "56WKN",
+          "top": 100000,
+          "url": "https://tranco-list.eu/list/56WKN"
+        },
+        "names": 100000,
+        "resolver": "tls://1.1.1.1",
+        "vantage": "Scaleway, France",
+        "svcbscan_version": "v0.5.2",
+        "started": "2026-10-06T13:27:47Z",
+        "finished": "2026-10-06T13:49:32Z",
+        "durations": {
+          "baseline_seconds": 533,
+          "probe_seconds": 767
+        }
+      },
+      "summary": {
+        "schema_version": 2,
+        "tool_version": "v0.5.2",
+        "source": "summarize",
+        "names": 100000,
+        "lookup_errors": 96,
+        "no_record": 74953,
+        "with_https": 24951,
+        "alias_mode": 23,
+        "ech": 11221,
+        "probe_merged": 24951,
+        "alpn": {
+          "h2": 24810,
+          "h3": 16805,
+          "h3-27": 1,
+          "h3-29": 3,
+          "http/1.1": 109
+        },
+        "ech_public_names": {
+          "bmFkZWtvLm5ldAo.net": 1,
+          "cloudflare-ech.com": 11210,
+          "ech.addr.tools": 1,
+          "ech.encryptedclienthello.com": 3,
+          "ech.siam-cdn.net": 1,
+          "ech.sly.ee": 1,
+          "ietf.org": 2,
+          "nghttp2.org": 1,
+          "numshield-ech.ru": 1
+        },
+        "dnssec": {
+          "partial": 20,
+          "signed": 2947,
+          "unsigned": 88457,
+          "validated": 8480
+        },
+        "probe_ech": {
+          "accepted": 11213,
+          "rejected": 2
+        },
+        "rules": {
+          "SVCB004": {
+            "names": 2,
+            "severity": "warn"
+          },
+          "SVCB005": {
+            "names": 1,
+            "severity": "error"
+          },
+          "SVCB006": {
+            "names": 2,
+            "severity": "info"
+          },
+          "SVCB007": {
+            "names": 1,
+            "severity": "error"
+          },
+          "SVCB008": {
+            "names": 2,
+            "severity": "error"
+          },
+          "SVCB014": {
+            "names": 3,
+            "severity": "info"
+          },
+          "SVCB015": {
+            "names": 4,
+            "severity": "info"
+          },
+          "SVCB020": {
+            "names": 89,
+            "severity": "info"
+          },
+          "SVCB021": {
+            "names": 216,
+            "severity": "info"
+          },
+          "SVCB032": {
+            "names": 10246,
+            "severity": "info"
+          },
+          "SVCB033": {
+            "names": 2795,
+            "severity": "warn"
+          },
+          "SVCB040": {
+            "names": 25,
+            "severity": "error"
+          },
+          "SVCB041": {
+            "names": 9,
+            "severity": "error"
+          },
+          "SVCB042": {
+            "names": 122,
+            "severity": "warn"
+          },
+          "SVCB044": {
+            "names": 2,
+            "severity": "error"
+          },
+          "SVCB046": {
+            "names": 1,
+            "severity": "warn"
+          },
+          "SVCB047": {
+            "names": 10,
             "severity": "warn"
           }
         }

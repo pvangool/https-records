@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-06",
+  "tranco": {
+    "list_id": "56WKN",
+    "top": 100000,
+    "url": "https://tranco-list.eu/list/56WKN"
+  },
+  "names": 100000,
+  "resolver": "tls://1.1.1.1",
+  "vantage": "Scaleway, France",
+  "svcbscan_version": "v0.5.2",
+  "started": "2026-10-06T13:27:47Z",
+  "finished": "2026-10-06T13:49:32Z",
+  "durations": {
+    "baseline_seconds": 533,
+    "probe_seconds": 767
+  }
+}
