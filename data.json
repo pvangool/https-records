@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-06T13:49:33Z",
+  "generated": "2026-10-12T06:22:19Z",
   "contact": "https://github.com/pvangool/svcbscan/issues",
   "rules": {
     "SVCB001": {
@@ -377,6 +377,136 @@
           },
           "SVCB044": {
             "names": 2,
+            "severity": "error"
+          },
+          "SVCB046": {
+            "names": 1,
+            "severity": "warn"
+          },
+          "SVCB047": {
+            "names": 10,
+            "severity": "warn"
+          }
+        }
+      }
+    },
+    {
+      "meta": {
+        "date": "2026-10-12",
+        "tranco": {
+          "list_id": "4672X",
+          "top": 100000,
+          "url": "https://tranco-list.eu/list/4672X"
+        },
+        "names": 100000,
+        "resolver": "tls://1.1.1.1",
+        "vantage": "Scaleway, France",
+        "svcbscan_version": "v0.5.2",
+        "started": "2026-10-12T06:00:01Z",
+        "finished": "2026-10-12T06:22:18Z",
+        "durations": {
+          "baseline_seconds": 535,
+          "probe_seconds": 795
+        }
+      },
+      "summary": {
+        "schema_version": 2,
+        "tool_version": "v0.5.2",
+        "source": "summarize",
+        "names": 100000,
+        "lookup_errors": 101,
+        "no_record": 74134,
+        "with_https": 25765,
+        "alias_mode": 23,
+        "ech": 12182,
+        "probe_merged": 25765,
+        "alpn": {
+          "h2": 25627,
+          "h3": 17710,
+          "h3-27": 1,
+          "h3-29": 3,
+          "http/1.1": 113
+        },
+        "ech_public_names": {
+          "bmFkZWtvLm5ldAo.net": 1,
+          "cloudflare-ech.com": 12171,
+          "ech.addr.tools": 1,
+          "ech.encryptedclienthello.com": 3,
+          "ech.siam-cdn.net": 1,
+          "ech.sly.ee": 1,
+          "ietf.org": 2,
+          "nghttp2.org": 1,
+          "numshield-ech.ru": 1
+        },
+        "dnssec": {
+          "partial": 22,
+          "signed": 2950,
+          "unsigned": 88608,
+          "validated": 8319
+        },
+        "probe_ech": {
+          "accepted": 12179,
+          "rejected": 1
+        },
+        "rules": {
+          "SVCB004": {
+            "names": 2,
+            "severity": "warn"
+          },
+          "SVCB005": {
+            "names": 1,
+            "severity": "error"
+          },
+          "SVCB006": {
+            "names": 2,
+            "severity": "info"
+          },
+          "SVCB007": {
+            "names": 1,
+            "severity": "error"
+          },
+          "SVCB008": {
+            "names": 2,
+            "severity": "error"
+          },
+          "SVCB014": {
+            "names": 3,
+            "severity": "info"
+          },
+          "SVCB015": {
+            "names": 4,
+            "severity": "info"
+          },
+          "SVCB020": {
+            "names": 98,
+            "severity": "info"
+          },
+          "SVCB021": {
+            "names": 226,
+            "severity": "info"
+          },
+          "SVCB032": {
+            "names": 11215,
+            "severity": "info"
+          },
+          "SVCB033": {
+            "names": 2737,
+            "severity": "warn"
+          },
+          "SVCB040": {
+            "names": 26,
+            "severity": "error"
+          },
+          "SVCB041": {
+            "names": 9,
+            "severity": "error"
+          },
+          "SVCB042": {
+            "names": 163,
+            "severity": "warn"
+          },
+          "SVCB044": {
+            "names": 1,
             "severity": "error"
           },
           "SVCB046": {
