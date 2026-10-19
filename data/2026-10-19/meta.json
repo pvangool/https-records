@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-19",
+  "tranco": {
+    "list_id": "467YX",
+    "top": 100000,
+    "url": "https://tranco-list.eu/list/467YX"
+  },
+  "names": 100000,
+  "resolver": "tls://1.1.1.1",
+  "vantage": "Scaleway, France",
+  "svcbscan_version": "v0.5.2",
+  "started": "2026-10-19T06:00:01Z",
+  "finished": "2026-10-19T06:21:33Z",
+  "durations": {
+    "baseline_seconds": 530,
+    "probe_seconds": 756
+  }
+}

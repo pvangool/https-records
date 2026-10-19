@@ -1,0 +1,111 @@
+{
+  "schema_version": 2,
+  "tool_version": "v0.5.2",
+  "source": "summarize",
+  "names": 100000,
+  "lookup_errors": 100,
+  "no_record": 75306,
+  "with_https": 24594,
+  "alias_mode": 23,
+  "ech": 10662,
+  "probe_merged": 24594,
+  "alpn": {
+    "h2": 24451,
+    "h3": 16361,
+    "h3-27": 1,
+    "h3-29": 2,
+    "http/1.1": 123
+  },
+  "ech_public_names": {
+    "bmFkZWtvLm5ldAo.net": 1,
+    "cloudflare-ech.com": 10650,
+    "danjen.kopass.us": 1,
+    "ech.addr.tools": 1,
+    "ech.encryptedclienthello.com": 3,
+    "ech.siam-cdn.net": 1,
+    "ech.sly.ee": 1,
+    "ietf.org": 2,
+    "nghttp2.org": 1,
+    "numshield-ech.ru": 1
+  },
+  "dnssec": {
+    "partial": 19,
+    "signed": 2973,
+    "unsigned": 88300,
+    "validated": 8608
+  },
+  "probe_ech": {
+    "accepted": 10659,
+    "rejected": 2
+  },
+  "rules": {
+    "SVCB004": {
+      "names": 2,
+      "severity": "warn"
+    },
+    "SVCB005": {
+      "names": 1,
+      "severity": "error"
+    },
+    "SVCB006": {
+      "names": 2,
+      "severity": "info"
+    },
+    "SVCB007": {
+      "names": 1,
+      "severity": "error"
+    },
+    "SVCB008": {
+      "names": 2,
+      "severity": "error"
+    },
+    "SVCB014": {
+      "names": 2,
+      "severity": "info"
+    },
+    "SVCB015": {
+      "names": 4,
+      "severity": "info"
+    },
+    "SVCB020": {
+      "names": 107,
+      "severity": "info"
+    },
+    "SVCB021": {
+      "names": 228,
+      "severity": "info"
+    },
+    "SVCB032": {
+      "names": 9683,
+      "severity": "info"
+    },
+    "SVCB033": {
+      "names": 2772,
+      "severity": "warn"
+    },
+    "SVCB040": {
+      "names": 26,
+      "severity": "error"
+    },
+    "SVCB041": {
+      "names": 9,
+      "severity": "error"
+    },
+    "SVCB042": {
+      "names": 128,
+      "severity": "warn"
+    },
+    "SVCB044": {
+      "names": 2,
+      "severity": "error"
+    },
+    "SVCB046": {
+      "names": 2,
+      "severity": "warn"
+    },
+    "SVCB047": {
+      "names": 8,
+      "severity": "warn"
+    }
+  }
+}
