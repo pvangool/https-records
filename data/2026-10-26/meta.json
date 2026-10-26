@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-26",
+  "tranco": {
+    "list_id": "W3ZV9",
+    "top": 100000,
+    "url": "https://tranco-list.eu/list/W3ZV9"
+  },
+  "names": 100000,
+  "resolver": "tls://1.1.1.1",
+  "vantage": "Scaleway, France",
+  "svcbscan_version": "v0.5.2",
+  "started": "2026-10-26T06:00:01Z",
+  "finished": "2026-10-26T06:21:45Z",
+  "durations": {
+    "baseline_seconds": 527,
+    "probe_seconds": 770
+  }
+}
