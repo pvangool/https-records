@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-02",
+  "tranco": {
+    "list_id": "V354N",
+    "top": 100000,
+    "url": "https://tranco-list.eu/list/V354N"
+  },
+  "names": 100000,
+  "resolver": "tls://1.1.1.1",
+  "vantage": "Scaleway, France",
+  "svcbscan_version": "v0.5.2",
+  "started": "2026-11-02T06:00:02Z",
+  "finished": "2026-11-02T06:21:49Z",
+  "durations": {
+    "baseline_seconds": 532,
+    "probe_seconds": 762
+  }
+}
