@@ -1,0 +1,111 @@
+{
+  "schema_version": 2,
+  "tool_version": "v0.5.2",
+  "source": "summarize",
+  "names": 100000,
+  "lookup_errors": 91,
+  "no_record": 74754,
+  "with_https": 25155,
+  "alias_mode": 22,
+  "ech": 10914,
+  "probe_merged": 25155,
+  "alpn": {
+    "h2": 25014,
+    "h3": 16675,
+    "h3-27": 1,
+    "h3-29": 2,
+    "http/1.1": 142
+  },
+  "ech_public_names": {
+    "addr.tools": 1,
+    "cdn.old.coffee": 1,
+    "cloudflare-ech.com": 10901,
+    "ech.encryptedclienthello.com": 3,
+    "ech.siam-cdn.net": 1,
+    "ech.sly.ee": 1,
+    "google.com": 2,
+    "ietf.org": 2,
+    "nghttp2.org": 1,
+    "numshield-ech.ru": 1
+  },
+  "dnssec": {
+    "partial": 21,
+    "signed": 3089,
+    "unsigned": 88143,
+    "validated": 8656
+  },
+  "probe_ech": {
+    "accepted": 10912,
+    "rejected": 1
+  },
+  "rules": {
+    "SVCB004": {
+      "names": 2,
+      "severity": "warn"
+    },
+    "SVCB005": {
+      "names": 1,
+      "severity": "error"
+    },
+    "SVCB006": {
+      "names": 2,
+      "severity": "info"
+    },
+    "SVCB007": {
+      "names": 1,
+      "severity": "error"
+    },
+    "SVCB008": {
+      "names": 2,
+      "severity": "error"
+    },
+    "SVCB014": {
+      "names": 2,
+      "severity": "info"
+    },
+    "SVCB015": {
+      "names": 4,
+      "severity": "info"
+    },
+    "SVCB020": {
+      "names": 131,
+      "severity": "info"
+    },
+    "SVCB021": {
+      "names": 258,
+      "severity": "info"
+    },
+    "SVCB032": {
+      "names": 9919,
+      "severity": "info"
+    },
+    "SVCB033": {
+      "names": 2798,
+      "severity": "warn"
+    },
+    "SVCB040": {
+      "names": 43,
+      "severity": "error"
+    },
+    "SVCB041": {
+      "names": 7,
+      "severity": "error"
+    },
+    "SVCB042": {
+      "names": 128,
+      "severity": "warn"
+    },
+    "SVCB044": {
+      "names": 1,
+      "severity": "error"
+    },
+    "SVCB046": {
+      "names": 1,
+      "severity": "warn"
+    },
+    "SVCB047": {
+      "names": 9,
+      "severity": "warn"
+    }
+  }
+}
